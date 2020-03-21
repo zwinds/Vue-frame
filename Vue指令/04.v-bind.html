@@ -7,7 +7,11 @@
 </head>
 <body>
     <div id="app">
+        <!-- v-bind: 是Vue中，提供用于绑定属性的指令 -->
+        <!-- v-bind中可以写合法的js表达式 -->
         <input type="button" value="按钮" v-bind:title ="mytitle + '123'">
+        <!-- v-bind指令可以简写为  :要绑定的属性 -->
+        <input type="button" value="按钮" :title ="mytitle + '123'">
     </div>
 
     <script src="../lib/vue.js"></script>
