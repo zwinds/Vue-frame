@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <input type="button" value="按钮" v-bind:title ="mytitle + '123'">
+    </div>
+
+    <script src="../lib/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                mytitle:'这是自定义标签'
+            }
+        })
+    </script>
+</body>
+</html>
