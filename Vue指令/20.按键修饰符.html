@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../lib/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <!-- v-on监听键盘事件的修饰符有：enter、detete、tab、esc、up、down、left、right和单个字母等 -->
+    <input type="text"  @keyup.f2="add">
+    <input type="text"  @key.enter="add">
+</div>
+   <script>
+    //自定义按键修饰符f2：在Vue1.0中默认按键修饰符存放在Vue.directive("on").keyCodes，而在Vue2.0中默认按键修饰符存放在Vue.config.keyCodes*/
+    Vue.directive("on").keyCodes.f2 = 113;
+
+    //键盘中按键f2对应的键码值keyCodes，可通过百度查找JS中键盘每个按键对应的keyCodes来获取
+    /*查看v-on指令中预定义的所有按键修饰符*/
+    console.log(Vue.directive("on").keyCodes);
+    //全局定义按键修饰符
+    Vue.config.keyCodes.f2 = 113;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+        },
+        methods: {
+        }
+    })
+   </script>
+</body>
+</html>
