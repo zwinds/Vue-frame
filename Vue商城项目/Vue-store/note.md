@@ -32,11 +32,95 @@
 2. 使用 vue-resource 获取数据
 3. 渲染真实数据
 
-## 实现 新闻资讯列表 点击跳转到新闻详情
-1. 把列表中的每一项改造为 router-link,同时，在跳转的时候应该提供唯一的Id标识符
-2. 创建新闻详情的组件页面  NewsInfo.vue
-3. 在 路由模块中，将 新闻详情的 路由地址 和 组件页面对应起来
+### 1. 把列表中的每一项改造为 router-link,同时，在跳转的时候应该提供唯一的Id标识符
+  * 把点击链接变成router-link to="/home/newslist"
+  * 在router.js下，引入列表页面
+    import newslist from './components/news/Newslist.vue'
+  * 接着创建路由对象(这里需要注意，/后面跟的是link to的相同地址)
+  router:[
+      { path : '/home/newslist' ,component:NewsList},
+  ], 
+  * 样式设置
+  在弹性盒对象的 <div> 元素中的各项周围留有空白：
+  justify-content: flex-start|flex-end|center|space-between|space-around|initial|inherit;
 
+### 2. 从api接口中获取新闻信息
+```vue
+<template>
+  <div>
+    <ul class="mui-table-view">
+      <li class="mui-table-view-cell mui-media" v-for="item in newslist" :key="item.id">
+        <router-link :to="'/home/newsinfo/' + item.id">
+          <img class="mui-media-object mui-pull-left" :src="item.img_url">
+          <div class="mui-media-body">
+            <h1>{{ item.title }}</h1>
+            <p class='mui-ellipsis'>
+              <span>发表时间：{{ item.add_time | dateFormat }}</span>
+              <span>点击：{{item.click}}次</span>
+            </p>
+          </div>
+        </router-link>
+      </li>
+    </ul>
+  </div>
+</template>
+```
+  ```vue
+  <script>
+import { Toast } from "mint-ui";//弹窗提示错误
+
+export default {
+  data() {
+    return {
+      newslist: [] // 新闻列表，默认是空数组
+    };
+  },
+  created() {
+    this.getNewsList();//生命周期中调用
+  },
+  methods: {
+    getNewsList() {
+      // 获取新闻列表
+      this.$http.get("api/getnewslist").then(result => {
+        if (result.body.status === 0) {
+          // 如果没有失败，应该把数据保存到 data 上
+          this.newslist = result.body.message;
+        } else {
+          Toast("获取新闻列表失败！");
+        }
+      });
+    }
+  }
+};
+</script>
+  ```
+  
+ ### 3.全局的配置地址vue-resource
+* 在main.js中
+
+```js
+// 2.2 安装 vue-resource
+Vue.use(VueResource)
+// 设置请求的根路径
+Vue.http.options.root = 'http://vue.studyit.io';
+```
+## 实现 新闻资讯列表 点击跳转到新闻详情
+### 1.把列表的每一项改造为router-link，同时，跳转的时候传递id
+```vue
+<template>
+      <li class="mui-table-view-cell mui-media" v-for="item in newslist" :key="item.id">
+        <router-link :to="'/home/newsinfo/' + item.id">
+</template>
+```
+### 2.创建新闻详情的组件页面 NewsInfo.vue
+```js
+import NewsInfo from './components/news/NewsInfo.vue'
+ { path: '/home/newsinfo/:id', component: NewsInfo },
+```
+### 3.在路由模块中，将 新闻详情的 路由地址 和 组件页面关联起来
+#### 获取页面的id
+```js
+```
 ## 实现 新闻详情 的 页面布局 和数据渲染
 
 ## 单独封装一个 comment.vue 评论子组件
