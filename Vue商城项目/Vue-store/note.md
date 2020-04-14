@@ -118,16 +118,78 @@ import NewsInfo from './components/news/NewsInfo.vue'
  { path: '/home/newsinfo/:id', component: NewsInfo },
 ```
 ### 3.在路由模块中，将 新闻详情的 路由地址 和 组件页面关联起来
-#### 获取页面的id
-```js
-```
-## 实现 新闻详情 的 页面布局 和数据渲染
 
-## 单独封装一个 comment.vue 评论子组件
+## 实现 新闻详情 的 页面布局 和数据渲染
+```js
+export default {
+  data() {
+    return {
+      id: this.$route.params.id, // 将 URL 地址中传递过来的 Id值，挂载到 data上，方便以后调用
+      newsinfo: {} // 新闻对象
+    };
+  },
+  created() {
+    this.getNewsInfo();
+  },
+  methods: {
+    getNewsInfo() {
+      // 获取新闻详情
+      this.$http.get("api/getnew/" + this.id).then(result => {
+        if (result.body.status === 0) {
+          this.newsinfo = result.body.message[0];
+        } else {
+          Toast("获取新闻失败！");
+        }
+      });
+    }
+  },
+```
+```vue
+<template>
+  <div class="newsinfo-container">
+    <!-- 大标题 -->
+    <h3 class="title">{{ newsinfo.title }}</h3>
+    <!-- 子标题 -->
+    <p class="subtitle">
+      <span>发表时间：{{ newsinfo.add_time | dateFormat }}</span>
+      <span>点击：{{ newsinfo.click }}次</span>
+    </p>
+    <hr>
+    <!-- 内容区域 -->
+    <div class="content" v-html="newsinfo.content"></div>
+    <!-- 评论子组件区域 -->
+    <comment-box :id="this.id"></comment-box>
+  </div>
+</template>
+```
+## 单独封装一个 comment.vue 评论子组件 
 1. 先创建一个 单独的 comment.vue 组件模板
+```js
+//  导入评论子组件
+<script>
+
+</script>
+```
 2. 在需要使用 comment 组件的 页面中，先手动 导入 comment 组件
+ + `import comment from "../subcomponents/comment.vue";`
  + `import comment from './comment.vue'`
 3. 在父组件中，使用 `components` 属性，将刚才导入 comment 组件，注册为自己的 子组件
+
+```js
+<template>
+    <comment-box :id="this.id"></comment-box>
+</template>
+```
+
+```js
+<script>
+  components: {
+    // 用来注册子组件的节点
+    "comment-box": comment
+  }
+  </script>
+  ```
+
 4. 将注册子组件时候的，注册名称，以 标签形式，在页面中 引用即可
 
 ## 获取所有的评论数据显示到页面中
@@ -135,15 +197,135 @@ import NewsInfo from './components/news/NewsInfo.vue'
 
 ## 实现点击加载更多评论的功能
 1. 为加载更多按钮，绑定点击事件，在事件中，请求 下一页数据
+
 2. 点击加载更多，让 pageIndex++ , 然后重新调用 this.getComments() 方法重新获取最新一页的数据
 3. 为了防止 新数据 覆盖老数据的情况，我们在 点击加载更多的时候，每当获取到新数据，应该让 老数据 调用 数组的 concat 方法，拼接上新数组
 
+* 注意这里使用了concat()方法！！！！
+* concat() 方法用于连接两个或多个数组。
+* 该方法不会改变现有的数组，而仅仅会返回被连接数组的一个副本。
+
+```js
+<script>
+import { Toast } from "mint-ui";
+export default {
+  data() {
+    return {
+      pageIndex: 1, // 默认展示第一页数据
+      comments: [], // 所有的评论数据
+      msg: "" // 评论输入的内容
+    };
+  },
+  created() {
+    this.getComments();
+  },
+  methods: {
+    getComments() {
+      // 获取评论
+      this.$http
+        .get("api/getcomments/" + this.id + "?pageindex=" + this.pageIndex)
+        .then(result => {
+          if (result.body.status === 0) {
+            // this.comments = result.body.message;
+            // 每当获取新评论数据的时候，不要把老数据清空覆盖，而是应该以老数据，拼接上新数据
+            this.comments = this.comments.concat(result.body.message);
+          } else {
+            Toast("获取评论失败！");
+          }
+        });
+    },
+    getMore() {
+      // 加载更多
+      this.pageIndex++;
+      this.getComments();
+    },
+    postComment() {
+      // 校验是否为空内容
+      if (this.msg.trim().length === 0) {
+        return Toast("评论内容不能为空！");
+      }
+
+      // 发表评论
+      // 参数1： 请求的URL地址
+      // 参数2： 提交给服务器的数据对象 { content: this.msg }
+      // 参数3： 定义提交时候，表单中数据的格式  { emulateJSON:true }
+      this.$http
+        .post("api/postcomment/" + this.$route.params.id, {
+          content: this.msg.trim()
+        })
+        .then(function(result) {
+          if (result.body.status === 0) {
+            // 1. 拼接出一个评论对象
+            var cmt = {
+              user_name: "匿名用户",
+              add_time: Date.now(),
+              content: this.msg.trim()
+            };
+            this.comments.unshift(cmt);
+            this.msg = "";
+          }
+        });
+    }
+  },
+  props: ["id"]
+};
+</script>
+
+```
+
 ## 发表评论
 1. 把文本框做双向数据绑定
+```vue
+<template>
+    <textarea placeholder="请输入要BB的内容（做多吐槽120字）" maxlength="120" v-model="msg"></textarea>
+    <mt-button type="primary" size="large" @click="postComment">发表评论</mt-button>
+</template>
+```
+```js
+<script>
+export default {
+  data() {
+    return {
+      msg: "" // 评论输入的内容
+    };
+  },
+      postComment() {
+      // 校验是否为空内容
+      if (this.msg.trim().length === 0) {
+        return Toast("评论内容不能为空！");
+      }
+      // 发表评论
+      // 参数1： 请求的URL地址
+      // 参数2： 提交给服务器的数据对象 { content: this.msg }
+      // 参数3： 定义提交时候，表单中数据的格式  { emulateJSON:true }
+      this.$http
+        .post("api/postcomment/" + this.$route.params.id, {
+          content: this.msg.trim()
+        })
+        .then(function(result) {
+          if (result.body.status === 0) {
+            // 1. 拼接出一个评论对象
+            var cmt = {
+              user_name: "匿名用户",
+              add_time: Date.now(),
+              content: this.msg.trim()
+            };
+            this.comments.unshift(cmt);
+            this.msg = "";
+          }
+        });
+    }
+  },
+</script>
+```
 2. 为发表按钮绑定一个事件
+
 3. 校验评论内容是否为空，如果为空，则Toast提示用户 评论内容不能为空
+
 4. 通过 vue-resource 发送一个请求，把评论内容提交给 服务器
+
 5. 当发表评论OK后，重新刷新列表，以查看最新的评论
+
  + 如果调用 getComments 方法重新刷新评论列表的话，可能只能得到 最后一页的评论，前几页的评论获取不到
  + 换一种思路： 当评论成功后，在客户端，手动拼接出一个 最新的评论对象，然后 调用 数组的 unshift 方法， 把最新的评论，追加到  data 中 comments 的开头；这样，就能 完美实现刷新评论列表的需求；
 
