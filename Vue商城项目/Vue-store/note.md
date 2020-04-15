@@ -353,8 +353,12 @@ export default {
  6. 当 滑动条 调试OK后，发现， tabbar 无法正常工作了，这时候，我们需要把 每个 tabbar 按钮的 样式中  `mui-tab-item` 重新改一下名字；
  7. 获取所有分类，并渲染 分类列表；
 
+## 移除严格模式
+[babel-plugin-transform-remove-strict-mode](https://github.com/genify/babel-plugin-transform-remove-strict-mode)
+
 ### 制作图片列表区域
 1. 图片列表需要使用懒加载技术，我们可以使用 Mint-UI 提供的现成的 组件 `lazy-load`
+
 2. 根据`lazy-load`的使用文档，尝试使用
 3. 渲染图片列表数据
 
@@ -367,6 +371,8 @@ export default {
 
 ## 实现 图片详情中 缩略图的功能
 1. 使用 插件 vue-preview 这个缩略图插件
+* [vue-preview](https://github.com/LS1231/vue-preview)
+一个Vue集成PhotoSwipe图片预览插件
 2. 获取到所有的图片列表，然后使用 v-for 指令渲染数据
 3. 注意： img标签上的class不能去掉
 4. 注意： 每个 图片数据对象中，必须有 w 和 h 属性
