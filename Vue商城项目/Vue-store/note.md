@@ -446,3 +446,50 @@ https://developer.mozilla.org/zh-CN/docs/Web/CSS/touch-action
 
 ## 编程式导航
 * [https://router.vuejs.org/zh/guide/essentials/navigation.html]
+
+## 使用jsApi设置最大值
+```js
+  props: ["max"],
+  watch: {
+    // 属性监听
+    max: function(newVal, oldVal) {
+      // 使用 JS API 设置 numbox 的最大值
+      mui(".mui-numbox")
+        .numbox()
+        .setOption("max", newVal);
+    }
+```
+
+## 一、localStorage、sessionStorage
+在HTML5中，新加入了一个localStorage特性，这个特性主要是用来作为本地存储来使用的，解决了cookie存储空间不足的问题(cookie中每条cookie的存储空间为4k)，localStorage中一般浏览器支持的是5M大小，这个在不同的浏览器中localStorage会有所不同。
+
+在HTML5中，本地存储是一个window的属性，包括localStorage和sessionStorage，从名字应该可以很清楚的辨认二者的区别，前者是一直存在本地的，后者只是伴随着session，窗口一旦关闭就没了。以下是localStorage 和sessionStorage的区别
+
+(1)localStorage和sessionStorage一样都是用来存储客户端临时信息的对象。
+
+(2)他们均只能存储字符串类型的对象（虽然规范中可以存储其他原生类型的对象，但是目前为止没有浏览器对其进行实现）。
+
+(3)localStorage生命周期是永久，这意味着除非用户显示在浏览器提供的UI上清除localStorage信息，否则这些信息将永远存在。
+
+(4)sessionStorage生命周期为当前窗口或标签页，一旦窗口或标签页被永久关闭了，那么所有通过sessionStorage存储的数据也就被清空了。
+
+(5)不同浏览器无法共享localStorage或sessionStorage中的信息。相同浏览器的不同页面间可以共享相同的localStorage（页面属于相同域名和端口），但是不同页面或标签页间无法共享sessionStorage的信息。这里需要注意的是，页面及标签页仅指顶级窗口，如果一个标签页包含多个iframe标签且他们属于同源页面，那么他们之间是可以共享sessionStorage的。
+
+## 二、localStorage的优势与局限
+localStorage的优势
+1、localStorage拓展了cookie的4K限制
+
+2、localStorage会可以将第一次请求的数据直接存储到本地，这个相当于一个5M大小的，针对于前端页面的数据库，相比于cookie可以节约带宽，但是这个却是只有在高版本的浏览器中才支持的
+
+localStorage的局限
+1、浏览器的大小不统一，并且在IE8以上的IE版本才支持localStorage这个属性
+
+2、目前所有的浏览器中都会把localStorage的值类型限定为string类型，这个在对我们日常比较常见的JSON对象类型需要一些转换
+
+3、localStorage在浏览器的隐私模式下面是不可读取的
+
+4、localStorage本质上是对字符串的读取，如果存储内容多的话会消耗内存空间，会导致页面变卡
+
+5、localStorage不能被爬虫抓取到
+
+localStorage与sessionStorage的唯一一点区别就是localStorage属于永久性存储，而sessionStorage属于当会话结束的时候，sessionStorage中的键值对会被清空
