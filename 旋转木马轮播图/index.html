@@ -1,180 +1,189 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <title>旋转木马轮播图</title>
-  <link rel="stylesheet" href="css/index.css"/>
-</head>
-<body>
-<div class="wrap" id="wrap">
-  <div class="slide" id="slide">
-    <ul>
-      <li><a href="#"><img src="images/1.jpeg" alt=""/></a></li>
-      <li><a href="#"><img src="images/2.jpeg" alt=""/></a></li>
-      <li><a href="#"><img src="images/3.jpeg" alt=""/></a></li>
-      <li><a href="#"><img src="images/4.png" alt=""/></a></li>
-      <li><a href="#"><img src="images/5.png" alt=""/></a></li>
-    </ul>
-    <div class="arrow" id="arrow">
-      <a href="javascript:;" class="prev" id="arrLeft"></a>
-      <a href="javascript:;" class="next" id="arrRight"></a>
-    </div>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="./css/css.css"/>
+		<link rel="stylesheet" href="./css/reset.css">
+		<link rel="stylesheet" href="./css/index.css">
+		<title>学习强国</title>
+	</head>
+
+	<body>
+		<header>
+			<div class="header-wrapper">
+				<!-- 顶部logo -->
+				<div class="left-logo">
+					<img src="./image/left_logo.png" alt="" class="left-logo">
+				</div>
+				<div class="right-logo">
+					<img src="./image/right_logo.png" alt="" class="right-logo">
+				</div>
+			</div>
+		</header>
+		
+		<!-- 导航栏 -->
+		<div class="bar-wrapper">
+			<div class="menu">
+				<div class="menu-list">
+					<div class="menu-row">
+						<a href="">学习新思想</a>
+						<a href="">十九大时间</a>
+						<a href="">学习理论</a>
+						<a href="">红色中国</a>
+						<a href="">学习科学</a>
+						<a href="">环球视野</a>
+					</div>
+					<div class="menu-row">
+						<a href="">习近平文汇</a>
+						<a href="">学习电视台</a>
+						<a href="">学习慕课</a>
+						<a href="">学习文化</a>
+						<a href="">强军兴军</a>
+						<a href="">美丽中国</a>
+					</div>
+				</div>
+				<!-- 登录框 -->
+				<div class="options-wrapper">
+					<div class="">
+						<img src="./image/ss.png" alt=""  class="image-login">
+						<img src="./image/yhdl.png" alt="" class="image-login">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 中间内容 -->
+		<!-- <div style="width: 100vw;height: 500px;background-color: aqua;">
+    主体内容
+  </div> -->
+<!-- 旋转木马轮播图 -->
+  <div class="wrap" id="wrap">
+	<div class="slide" id="slide">
+	  <ul>
+		<li><a href="#"><img src="image/1.jpg" alt=""/></a></li>
+		<li><a href="#"><img src="image/2.jpg" alt=""/></a></li>
+		<li><a href="#"><img src="image/3.jpg" alt=""/></a></li>
+		<li><a href="#"><img src="image/4.jpg" alt=""/></a></li>
+		<li><a href="#"><img src="image/5.jpg	" alt=""/></a></li>
+	  </ul>
+	  <div class="arrow" id="arrow">
+		<a href="javascript:;" class="prev" id="arrLeft"></a>
+		<a href="javascript:;" class="next" id="arrRight"></a>
+	  </div>
+	</div>
   </div>
-</div>
-<script>
-  //根据id获取对应的元素
-function my$(id) {
-    return document.getElementById(id);
-}
-/*
-* element---任意的元素
-* attr---属性
-* */
-function getAttrValue(element,attr) {
-    return element.currentStyle?element.currentStyle[attr] : window.getComputedStyle(element,null)[attr]||0;
-}
-//终极版本的动画函数---有bug
-function animate(element,json,fn) {
-    clearInterval(element.timeId);
-    element.timeId=setInterval(function () {
-        var flag=true;//假设都达到了目标
-        for(var attr in json){
-            if(attr=="opacity"){//判断属性是不是opacity
-                var current= getAttrValue(element,attr)*100;
-                //每次移动多少步
-                var target=json[attr]*100;//直接赋值给一个变量,后面的代码都不用改
-                var step=(target-current)/10;//(目标-当前)/10
-                step=step>0?Math.ceil(step):Math.floor(step);
-                current=current+step;
-                element.style[attr]=current/100;
-            }else if(attr=="zIndex"){//判断属性是不是zIndex
-                element.style[attr]=json[attr];
-            }else{//普通的属性
 
-                //获取当前的位置----getAttrValue(element,attr)获取的是字符串类型
-                var current= parseInt(getAttrValue(element,attr))||0;
-                //每次移动多少步
-                var target=json[attr];//直接赋值给一个变量,后面的代码都不用改
-                var step=(target-current)/10;//(目标-当前)/10
-                step=step>0?Math.ceil(step):Math.floor(step);
-                current=current+step;
-                element.style[attr]=current+"px";
-            }
-            if(current!=target){
-                flag=false;//如果没到目标结果就为false
-            }
-        }
-        if(flag){//结果为true
-            clearInterval(element.timeId);
-            if(fn){//如果用户传入了回调的函数
-                fn(); //就直接的调用,
-            }
-        }
-        // console.log("target:"+target+"current:"+current+"step:"+step);
-    },10);
-}
 
-  var config = [
-    {
-      width: 400,
-      top: 70,
-      left: 50,
-      opacity: 0.2,
-      zIndex: 2
-    },//0
-    {
-      width: 600,
-      top: 70,
-      left: 0,
-      opacity: 1,
-      zIndex: 3
-    },//1
-    {
-      width: 750,
-      top: 25,
-      left: 225,
-      opacity: 1,
-      zIndex: 4
-    },//2
-    {
-      width: 600,
-      top: 70,
-      left: 600,
-      opacity: 1,
-      zIndex: 3
-    },//3
-    {
-      width: 400,
-      top: 70,
-      left: 750,
-      opacity: 0.2,
-      zIndex: 2
-    }//4
-  ];
-
-  // 页面加载事件
-  window.onload = function() {
-    
-    //防止用户点击的太快出Bug---假设所有的动画执行完毕了---锁
-    var flag = true;
-
-    // 图片散开 先获取ul里的li
-      var list = my$("slide").getElementsByTagName("li");
-      // 设置分配代码
-      function assign() {
-           // 循环遍历li
-          for(var i=0;i<list.length;i++ ) {
-              // 添加动画散开时间
-              animate(list[i],config[i],function(){
-                // 回调函数
-                // 所有的代码都执行完了
-                flag = true;
-              });
-          }
-      };
-      //分配代码拿出来
-      assign();
-
-      // 鼠标进入显示
-      my$("slide").onmouseover = function(){
-        animate(my$("arrow"),{"opacity":1});
-        // clearInterval(AutomaticClick);
-      };
-      // 鼠标进入隐藏
-      my$("slide").onmouseout = function(){
-        animate(my$("arrow"),{"opacity":0});
-        // time = setInterval(AutomaticClick,5000);
-      };
-      
-      // 自从点击
-      // var time = setInterval(AutomaticClick,5000);
-      // 点击右按钮
-      my$("arrRight").onclick = AutomaticClick;
-      function AutomaticClick() {
-        // 判断执行完没
-        if(flag) {
-            // 执行完了锁上
-            flag = false;
-            config.push(config.shift());
-            //分配代码
-            assign();
-        }
-      }
-
-      // 点击左按钮
-      my$("arrLeft").onclick = function() {
-            // 判断执行完没
-            if(flag) {
-            // 执行完了锁上
-            flag = false;
-            config.unshift(config.pop());
-            //分配代码
-            assign();
-        }
-          
-      };
-  };
-</script>
-
+		<div id="container">
+			<div id="swiper-main" >
+				<a href="#"><img id="swiper-image" src="image/swiper0.jpg" /></a>
+				<button type="button" id="goPre" class="btn-large btn-hidden">&lt;</button>
+				<button type="button" onclick="goNext()" id="goNext" class="btn-large btn-hidden">&gt;</button>
+				<ul id="cicle">
+					<li class="cicle-item cicle-check" index="0">1</li>
+					<li class="cicle-item" index="1">2</li>
+					<li class="cicle-item" index="2">3</li>
+					<li class="cicle-item" index="3">4</li>
+					<li class="cicle-item" index="4">5</li>
+				</ul>
+			</div>
+			<div id="swiper-group">
+				<div id="swiper-left">
+					<h3 class="red-text">校园印象</h3><br/>
+					<div id="sleft-box">
+						<ul id="s-pics">
+							<li class="pic-check" index="0">
+								<img src="image/sxyyx0.jpg" />
+							</li>
+							<li index="1">
+								<img src="image/sxyyx1.jpg" />
+							</li>
+							<li index="2">
+								<img src="image/sxyyx2.jpg" />
+							</li>
+							<li index="3">
+								<img src="image/sxyyx0.jpg" />
+							</li>
+							<li index="4">
+								<img src="image/sxyyx1.jpg" />
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="action">
+			<ul>
+				<li id="li1"></li>
+			</ul>
+			<div id="div1"><span id="share">缓冲</span></div>
+			<div id="div2"><span id="share">速度</span></div>
 </body>
+		</div>
+		<!-- 底部 -->
+		<footer>
+			<div class="content">
+				<!-- 链接 -->
+				<div class="links">
+					<div class="link-left">友情链接</div>
+					<div class="link-right">
+						<a href="">人民网</a>
+						<a href="">新华网</a>
+						<a href="">中国网</a>
+						<a href="">央视网</a>
+						<a href="">国际在线</a>
+						<a href="">中国日报网</a>
+						<a href="">中国青年网</a>
+						<a href="">中国经济网</a>
+						<a href="">中国新闻网</a>
+						<a href="">光明网</a>
+						<a href="">央广网</a>
+						<a href="">中工网</a>
+						<a href="">党建网</a>
+						<a href="">中青在线</a>
+						<a href="">中国军网</a>
+						<a href="">法制网</a>
+						<a href="">求是网</a>
+						<a href="">中国网信网</a>
+						<a href="">中国文明网</a>
+						<a href="">中国政府网</a>
+						<a href="">教育部网站</a>
+						<a href="">国防部网站</a>
+						<a href="">文化和旅游部网站</a>
+						<a href="">国新办网站</a>
+						<a href="">中国扫黄打非网</a>
+						<a href="">女性之声</a>
+						<a href="">中国报业</a>
+						<a href="">中央网信办举报中心</a>
+						<a href="">千龙网</a>
+						<a href="">中国社会科学网</a>
+						<a href="">中国科技网</a>
+						<a href="">中国农业新闻网</a>
+						<a href="">西影网</a>
+						<a href="">中国法律服务网</a>
+						<a href="">中国普法网</a>
+						<a href="">中国西藏网</a>
+						<a href="">中国妇女网</a>
+					</div>
+				</div>
+				<!-- 最底部 -->
+				<div class="copyright">
+					<div class="icon-wrapper">
+						<img src="./image/dzjg.png" alt="" class="icon">
+						<img src="./image/bqsm.png" alt="" class="icon2">
+					</div>
+					<p>服务电话：12361　值班电话：010-55624303、010-55624311</p>
+					<p>中共中央宣传部宣传舆情研究中心版权所有　未经书面授权禁止使用</p>
+					<p>Copyright© 2018-2020 by www.xuexi.cn. all rights reserved</p>
+					<p>ICP备案/许可证编号：<a class="text-link">京ICP备18000311</a> 京公网安备11040102700063号</p>
+					<p class="tips">字体支持：北京北大方正电子有限公司　北京汉仪科印信息技术有限公司　北京华康信息技术有限公司</p>
+				</div>
+			</div>
+		</footer>
+		<script src="./js/js.js"></script>
+		<script src="./js/move.js"></script>
+	</body>
+
 </html>
