@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>旋转木马轮播图</title>
+  <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <div class="slide" id="slide">
+    <ul>
+      <li><a href="#"><img src="images/1.jpeg" alt=""/></a></li>
+      <li><a href="#"><img src="images/2.jpeg" alt=""/></a></li>
+      <li><a href="#"><img src="images/3.jpeg" alt=""/></a></li>
+      <li><a href="#"><img src="images/4.png" alt=""/></a></li>
+      <li><a href="#"><img src="images/5.png" alt=""/></a></li>
+    </ul>
+    <div class="arrow" id="arrow">
+      <a href="javascript:;" class="prev" id="arrLeft"></a>
+      <a href="javascript:;" class="next" id="arrRight"></a>
+    </div>
+  </div>
+</div>
+<script>
+  //根据id获取对应的元素
+function my$(id) {
+    return document.getElementById(id);
+}
+/*
+* element---任意的元素
+* attr---属性
+* */
+function getAttrValue(element,attr) {
+    return element.currentStyle?element.currentStyle[attr] : window.getComputedStyle(element,null)[attr]||0;
+}
+//终极版本的动画函数---有bug
+function animate(element,json,fn) {
+    clearInterval(element.timeId);
+    element.timeId=setInterval(function () {
+        var flag=true;//假设都达到了目标
+        for(var attr in json){
+            if(attr=="opacity"){//判断属性是不是opacity
+                var current= getAttrValue(element,attr)*100;
+                //每次移动多少步
+                var target=json[attr]*100;//直接赋值给一个变量,后面的代码都不用改
+                var step=(target-current)/10;//(目标-当前)/10
+                step=step>0?Math.ceil(step):Math.floor(step);
+                current=current+step;
+                element.style[attr]=current/100;
+            }else if(attr=="zIndex"){//判断属性是不是zIndex
+                element.style[attr]=json[attr];
+            }else{//普通的属性
+
+                //获取当前的位置----getAttrValue(element,attr)获取的是字符串类型
+                var current= parseInt(getAttrValue(element,attr))||0;
+                //每次移动多少步
+                var target=json[attr];//直接赋值给一个变量,后面的代码都不用改
+                var step=(target-current)/10;//(目标-当前)/10
+                step=step>0?Math.ceil(step):Math.floor(step);
+                current=current+step;
+                element.style[attr]=current+"px";
+            }
+            if(current!=target){
+                flag=false;//如果没到目标结果就为false
+            }
+        }
+        if(flag){//结果为true
+            clearInterval(element.timeId);
+            if(fn){//如果用户传入了回调的函数
+                fn(); //就直接的调用,
+            }
+        }
+        // console.log("target:"+target+"current:"+current+"step:"+step);
+    },10);
+}
+
+  var config = [
+    {
+      width: 400,
+      top: 70,
+      left: 50,
+      opacity: 0.2,
+      zIndex: 2
+    },//0
+    {
+      width: 600,
+      top: 70,
+      left: 0,
+      opacity: 1,
+      zIndex: 3
+    },//1
+    {
+      width: 750,
+      top: 25,
+      left: 225,
+      opacity: 1,
+      zIndex: 4
+    },//2
+    {
+      width: 600,
+      top: 70,
+      left: 600,
+      opacity: 1,
+      zIndex: 3
+    },//3
+    {
+      width: 400,
+      top: 70,
+      left: 750,
+      opacity: 0.2,
+      zIndex: 2
+    }//4
+  ];
+
+  // 页面加载事件
+  window.onload = function() {
+    
+    //防止用户点击的太快出Bug---假设所有的动画执行完毕了---锁
+    var flag = true;
+
+    // 图片散开 先获取ul里的li
+      var list = my$("slide").getElementsByTagName("li");
+      // 设置分配代码
+      function assign() {
+           // 循环遍历li
+          for(var i=0;i<list.length;i++ ) {
+              // 添加动画散开时间
+              animate(list[i],config[i],function(){
+                // 回调函数
+                // 所有的代码都执行完了
+                flag = true;
+              });
+          }
+      };
+      //分配代码拿出来
+      assign();
+
+      // 鼠标进入显示
+      my$("slide").onmouseover = function(){
+        animate(my$("arrow"),{"opacity":1});
+        // clearInterval(AutomaticClick);
+      };
+      // 鼠标进入隐藏
+      my$("slide").onmouseout = function(){
+        animate(my$("arrow"),{"opacity":0});
+        // time = setInterval(AutomaticClick,5000);
+      };
+      
+      // 自从点击
+      // var time = setInterval(AutomaticClick,5000);
+      // 点击右按钮
+      my$("arrRight").onclick = AutomaticClick;
+      function AutomaticClick() {
+        // 判断执行完没
+        if(flag) {
+            // 执行完了锁上
+            flag = false;
+            config.push(config.shift());
+            //分配代码
+            assign();
+        }
+      }
+
+      // 点击左按钮
+      my$("arrLeft").onclick = function() {
+            // 判断执行完没
+            if(flag) {
+            // 执行完了锁上
+            flag = false;
+            config.unshift(config.pop());
+            //分配代码
+            assign();
+        }
+          
+      };
+  };
+</script>
+
+</body>
+</html>
