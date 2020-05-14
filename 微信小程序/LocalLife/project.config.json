@@ -11,6 +11,8 @@
 	"libVersion": "1.6.4",
 	"appid": "touristappid",
 	"projectname": "Local_life",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,
